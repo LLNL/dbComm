@@ -18,46 +18,50 @@ import sys
 class dbComm:
     """Provide interface to DB (currently MongoDB)."""
 
-    def __init__(self, OUN=None, debug=False):
+    def __init__(self, hostname, port=27017, authentication='None', OUN=None, debug=False):
         """Establish connection to DB server."""
-        # self.User = User
         self.debug = debug
         if self.debug:
             self.logFile = f'logs/dbCommLog_{round(time.time())}.txt'
             file = open(self.logFile, 'w+')
             file.close()
 
-        auth = False
-        while not auth:
-            try:
-                if OUN:
-                    self.OUN = OUN
-                else:
-                    self.OUN = getpass.getuser()
-                if sys.stdin.isatty():  # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
-                    AD = getpass.getpass('Enter AD: ')
-                else:
-                    print('Enter AD: ')
-                    AD = sys.stdin.readline().rstrip()
-
-                self.host = 'wci-ame-u-prd.llnl.gov'
-                uri = 'mongodb://' + self.OUN + ':' + AD + '@' + self.host + ':27017/tls=true?authMechanism=PLAIN&' \
-                      'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
-                self.newConn(uri)
-                # self.getUser(User)
-                auth = True
-                print('Connected to wci-ame-u-prd.llnl.gov')
-            except pymongo.errors.OperationFailure:  # Authentication Error
-                print('Authentication Error. Try again.')
-            except:
-                auth = True
+        if authentication == 'None':
+            self.newConn(f'{hostname}:{port}')
+            self.host = hostname
+        elif authentication == 'LDAP':
+            auth = False
+            while not auth:
                 try:
-                    self.newConn('localhost:27017')
-                    self.host = 'localhost'
-                    print('Connection to remote DB failed. Connected to localhost')
+                    if OUN:
+                        self.OUN = OUN
+                    else:
+                        self.OUN = getpass.getuser()
+                    if sys.stdin.isatty():  # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
+                        AD = getpass.getpass('Enter AD: ')
+                    else:
+                        print('Enter AD: ')
+                        AD = sys.stdin.readline().rstrip()
+
+                    self.host = hostname
+                    uri = f'mongodb://{self.OUN}:{AD}@{self.host}:{port}/tls=true?authMechanism=PLAIN&' \
+                      'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
+                    self.newConn(uri)
+                    auth = True
+                    print(f'Connected to {hostname}')
+                except pymongo.errors.OperationFailure:  # Authentication Error
+                    print('Authentication Error. Try again.')
                 except:
-                    self.host = 'NONE'
-                    print('No DB available. See admin.')
+                    auth = True
+                    try:
+                        self.newConn('localhost:27017')
+                        self.host = 'localhost'
+                        print('Connection to remote DB failed. Connected to localhost')
+                    except:
+                        self.host = 'NONE'
+                        print('No DB available. See admin.')
+        else:
+            print('Authentication method not set up yet. Contact admin')
 
         if self.debug:
             with open(self.logFile, "w") as log:
@@ -69,19 +73,17 @@ class dbComm:
     def newConn(self, host):
         """Connect to database depending on debug and establish collections"""
         self.dbClient = pymongo.MongoClient(host, serverSelectionTimeoutMS=5000)
+        self.getDBs()
 
-        if self.debug:
-            self.db = self.dbClient["BQ_DEV"]
-        else:
-            self.db = self.dbClient["born_qualified"]
+    def getDBs(self):
+        """Get list of databases on the server"""
+        self.dbList = self.dbClient.list_database_names()
+        return self.dbList
 
-        self.collList = self.db.list_collection_names()
-        self.fs = gridfs.GridFS(self.db)
-
-    def switchDB(self, db_name):
+    def setDB(self, db_name):
         """Connect to different database on the server"""
-        if db_name in self.dbClient.list_database_names():
-            self.db = self.dbClient['gold_standard']
+        if db_name in self.dbList:
+            self.db = self.dbClient[db_name]
             self.fs = gridfs.GridFS(self.db)
             self.collList = self.db.list_collection_names()
         else:
@@ -99,7 +101,20 @@ class dbComm:
                 fRec = rec
         return fColl, fRec
 
+    def getData4Part(self, partNum):
+        retList = list()
+        if 'system.profile' in self.collList:
+            self.collList.remove('system.profile')
+        for x in self.collList:
+            coll = self.db[f"{x}"]
+            for rec in coll.find({'Part Number': partNum}):
+                retList.append({coll.name: rec})
+        return retList
 
+
+    '''
+    This Section is actions on records in a specified collection
+    '''
     def getRecord(self, collection, recID):
         '''Get a record given its collection and _id '''
         if collection in self.collList:
@@ -118,16 +133,6 @@ class dbComm:
         else:
             print('the collection \'' + collection + '\' does not exist in the database ' + str(self.db.name))
         return retStr
-
-    def getData4Part(self, partNum):
-        retList = list()
-        if 'system.profile' in self.collList:
-            self.collList.remove('system.profile')
-        for x in self.collList:
-            coll = self.db[f"{x}"]
-            for rec in coll.find({'Part Number': partNum}):
-                retList.append({coll.name: rec})
-        return retList
 
     def updateRecord(self, collection, recID, updateVals, updateType):
         '''Update a record with a set of values given a collection and _id'''
@@ -172,7 +177,9 @@ class dbComm:
 
 
 if __name__ == "__main__":
-    db = dbComm()
-    print(db.getRecords('connection_test'))
-    pass
+    db = dbComm('wci-ame-u-prd.llnl.gov', authentication='LDAP')
+    # db = dbComm('maptac19')
+    print(db.getDBs())
+    print(db.getRecords(db.collList[0]))
+
 

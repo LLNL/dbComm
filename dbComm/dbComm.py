@@ -168,8 +168,9 @@ class dbComm:
     '''
     Methods for handling files in the database with gridFS
     '''
-    def putFile(self, fileName):
-        return self.fs.put(fileName)
+
+    def putFile(self, filepath, **kwargs):
+        return self.fs.put(filepath, **kwargs)
     def getFile(self, fileID):
         return self.fs.get(fileID).read()
     def deleteFile(self, fileID):
@@ -180,6 +181,6 @@ if __name__ == "__main__":
     db = dbComm('wci-ame-u-prd.llnl.gov', authentication='LDAP')
     # db = dbComm('maptac19')
     print(db.getDBs())
-    print(db.getRecords(db.collList[0]))
+    # print(db.getRecords(db.collList[0]))
 
 

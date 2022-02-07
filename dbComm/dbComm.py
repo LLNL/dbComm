@@ -37,7 +37,9 @@ class dbComm:
                         self.OUN = OUN
                     else:
                         self.OUN = getpass.getuser()
-                    if sys.stdin.isatty():  # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
+                    # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
+                    # otherwise, the entered password will be printed to the console
+                    if sys.stdin.isatty():
                         AD = getpass.getpass('Enter AD: ')
                     else:
                         print('Enter AD: ')
@@ -51,7 +53,7 @@ class dbComm:
                     print(f'Connected to {hostname}')
                 except pymongo.errors.OperationFailure:  # Authentication Error
                     print('Authentication Error. Try again.')
-                except:
+                except:  # if a connection to a remote server cannot be established, attempt to connect to localhost
                     auth = True
                     try:
                         self.newConn('localhost:27017')
@@ -93,6 +95,8 @@ class dbComm:
     This Section is actions on ALL collections
     '''
     def getDBRecByID(self, RecID):
+        """Search all collections for a record _id"""
+        fColl, fRec = None, None
         for x in self.collList:
             coll = self.db[f"{x}"]
             rec = coll.find_one({'_id': ObjectId(RecID)})
@@ -101,16 +105,19 @@ class dbComm:
                 fRec = rec
         return fColl, fRec
 
-    def getData4Part(self, partNum):
-        retList = list()
-        if 'system.profile' in self.collList:
-            self.collList.remove('system.profile')
-        for x in self.collList:
-            coll = self.db[f"{x}"]
-            for rec in coll.find({'Part Number': partNum}):
-                retList.append({coll.name: rec})
-        return retList
-
+    def getData4Field(self, field):
+        """Search all collections for a provided field"""
+        if type(field) is not dict:
+            Exception('search field must be type <dict>')
+        else:
+            retList = list()
+            if 'system.profile' in self.collList:
+                self.collList.remove('system.profile')
+            for x in self.collList:
+                coll = self.db[f"{x}"]
+                for rec in coll.find(field):
+                    retList.append({coll.name: rec})
+            return retList
 
     '''
     This Section is actions on records in a specified collection
@@ -168,7 +175,6 @@ class dbComm:
     '''
     Methods for handling files in the database with gridFS
     '''
-
     def putFile(self, filepath, **kwargs):
         return self.fs.put(filepath, **kwargs)
     def getFile(self, fileID):

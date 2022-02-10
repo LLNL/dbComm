@@ -18,7 +18,7 @@ import sys
 class dbComm:
     """Provide interface to DB (currently MongoDB)."""
 
-    def __init__(self, hostname, port=27017, authentication='None', OUN=None, debug=False):
+    def __init__(self, hostname, port=27017, authentication='None', OUN=None, AD=None, debug=False):
         """Establish connection to DB server."""
         self.debug = debug
         if self.debug:
@@ -39,7 +39,9 @@ class dbComm:
                         self.OUN = getpass.getuser()
                     # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
                     # otherwise, the entered password will be printed to the console
-                    if sys.stdin.isatty():
+                    if AD:
+                        pass
+                    elif sys.stdin.isatty():
                         AD = getpass.getpass('Enter AD: ')
                     else:
                         print('Enter AD: ')

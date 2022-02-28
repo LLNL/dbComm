@@ -55,6 +55,7 @@ class dbComm:
                     print(f'Connected to {hostname}')
                 except pymongo.errors.OperationFailure:  # Authentication Error
                     print('Authentication Error. Try again.')
+                    AD = None
                 except:  # if a connection to a remote server cannot be established, attempt to connect to localhost
                     auth = True
                     try:

@@ -31,7 +31,12 @@ class dbComm:
             self.host = hostname
         elif authentication == 'LDAP':
             auth = False
+            attempts = 0
             while not auth:
+                attempts += 1
+                if attempts > 5:
+                    raise Exception('Too many failed password attempts.')
+                    break
                 try:
                     if OUN:
                         self.OUN = OUN
@@ -56,7 +61,7 @@ class dbComm:
                 except pymongo.errors.OperationFailure:  # Authentication Error
                     print('Authentication Error. Try again.')
                     AD = None
-                except:  # if a connection to a remote server cannot be established, attempt to connect to localhost
+                except: # UNREACHABLE # if a connection to a remote server cannot be established, attempt to connect to localhost
                     auth = True
                     try:
                         self.newConn('localhost:27017')

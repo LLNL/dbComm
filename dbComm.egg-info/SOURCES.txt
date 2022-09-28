@@ -1,0 +1,10 @@
+LICENSE
+README.md
+pyproject.toml
+dbComm/__init__.py
+dbComm/dbComm.py
+dbComm/example.py
+dbComm.egg-info/PKG-INFO
+dbComm.egg-info/SOURCES.txt
+dbComm.egg-info/dependency_links.txt
+dbComm.egg-info/top_level.txt

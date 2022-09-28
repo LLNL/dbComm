@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: dbComm
+Version: 0.0.1
+Summary: dbComm module for communicating with a (MongoDB) database
+Author-email: Alex Caviness <caviness2@llnl.gov>
+Project-URL: Homepage, https://mybitbucket.llnl.gov/projects/PREC/repos/database-comm/
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Instructions for Setting Up dbComm
+URL: https://mybitbucket.llnl.gov/scm/prec/database-comm.git
+
+Description: dbComm.py is a module for integrating a Python codebase with MongoDB using the PyMongo library.
+The methods contained are used to connect to a Mongo database and push/pull data.
+
+Requirements: PyMongo (and its companions GridFS and BSON) [pip install pymongo]
+
+Usage:
+To use dbComm, create an instance of the class. This will attempt to connect to the database. ***include details about URI and OUN/AD***
+Upon successful connection, any of the methods can be used in the class to interact with the database.

@@ -7,7 +7,6 @@ import datetime
 import time
 import gridfs
 import io
-import matplotlib.pyplot as plt
 import pickle
 from PIL import Image
 import pymongo
@@ -16,19 +15,34 @@ import getpass
 import sys
 
 class Mongo:
-    """Provide interface to DB (currently MongoDB)."""
+    """Provide an interface to MongoDB."""
 
-    def __init__(self, hostname, port=27017, authentication='None', OUN=None, AD=None, debug=False):
-        """Establish connection to DB server."""
-        self.debug = debug
-        if self.debug:
-            self.logFile = f'logs/dbCommLog_{round(time.time())}.txt'
-            file = open(self.logFile, 'w+')
-            file.close()
+    def __init__(self, host, port=27017, authentication='None', OUN=None, AD=None):
+        """Establish connection to a MongoDB server.
 
-        if authentication == 'None':
-            self.newConn(f'{hostname}:{port}')
-            self.host = hostname
+        The `host` parameter can be a full `mongodb URI
+        <http://dochub.mongodb.org/core/connections>`_, in addition to
+        a simple hostname.
+
+        Parameters:
+          - host: hostname or IP address, or a
+            mongodb URI.
+          - port (optional): port number on which to connect
+          - authentication (optional): type of authentication
+          - OUN (optional): username to connect to DB
+          - AD (optional): password to connect to DB
+          """
+
+        if 'mongodb://' in host:
+            try:
+                self.newConn(host)
+            except pymongo.errors.ServerSelectionTimeoutError:
+                raise Exception('Server timeout. Check connection details.')
+        elif authentication == 'None':
+            try:
+                self.newConn(f'{host}:{port}')
+            except pymongo.errors.ServerSelectionTimeoutError:
+                raise Exception('Server timeout. Check connection details.')
         elif authentication == 'LDAP':
             auth = False
             attempts = 0
@@ -51,37 +65,31 @@ class Mongo:
                     else:
                         print('Enter AD: ')
                         AD = sys.stdin.readline().rstrip()
-
-                    self.host = hostname
-                    uri = f'mongodb://{self.OUN}:{AD}@{self.host}:{port}/tls=true?authMechanism=PLAIN&' \
+                    uri = f'mongodb://{self.OUN}:{AD}@{host}:{port}/tls=true?authMechanism=PLAIN&' \
                       'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
                     self.newConn(uri)
                     auth = True
-                    print(f'Connected to {hostname}')
+                    print(f'Connected to {host}')
                 except pymongo.errors.OperationFailure:  # Authentication Error
                     print('Authentication Error. Try again.')
                     AD = None
-                except: # UNREACHABLE # if a connection to a remote server cannot be established, attempt to connect to localhost
-                    auth = True
-                    try:
-                        self.newConn('localhost:27017')
-                        self.host = 'localhost'
-                        print('Connection to remote DB failed. Connected to localhost')
-                    except:
-                        self.host = 'NONE'
-                        print('No DB available. See admin.')
+                except pymongo.errors.ServerSelectionTimeoutError:
+                    raise Exception('Server timeout. Check connection details.')
         else:
             print('Authentication method not set up yet. Contact admin')
-
-        if self.debug:
-            with open(self.logFile, "w") as log:
-                log.write(f'Host: {self.host}\n')
 
     '''
     Connection block
     '''
     def newConn(self, host):
-        """Connect to database depending on debug and establish collections"""
+        """Connect to database and establish collections
+
+        Parameters:
+            host: host:port or MongoDB URI
+
+        Return:
+            None"""
+
         self.dbClient = pymongo.MongoClient(host, serverSelectionTimeoutMS=5000)
         self.getDBs()
 
@@ -91,7 +99,14 @@ class Mongo:
         return self.dbList
 
     def setDB(self, db_name):
-        """Connect to different database on the server"""
+        """Connect to different database on the server
+
+        Parameters:
+            db_name: name of the database on the server to switch to
+
+        Return:
+            None"""
+
         if db_name in self.dbList:
             self.db = self.dbClient[db_name]
             self.fs = gridfs.GridFS(self.db)
@@ -103,7 +118,14 @@ class Mongo:
     This Section is actions on ALL collections
     '''
     def getDBRecByID(self, RecID):
-        """Search all collections for a record _id"""
+        """Search all collections for a record _id
+
+        Parameters:
+            RecID: the _id of the desired record
+
+        Return:
+            fColl: collection the record was found in
+            fRec: record corresponding to the _id"""
         fColl, fRec = None, None
         for x in self.collList:
             coll = self.db[f"{x}"]
@@ -114,7 +136,13 @@ class Mongo:
         return fColl, fRec
 
     def getData4Field(self, field):
-        """Search all collections for a provided field"""
+        """Search all collections for a provided field
+
+        Parameters:
+            field: dict of key to search collections for
+
+        Return:
+            retList: list of the records with the matching field"""
         if type(field) is not dict:
             Exception('search field must be type <dict>')
         else:
@@ -131,7 +159,14 @@ class Mongo:
     This Section is actions on records in a specified collection
     '''
     def getRecord(self, collection, recID):
-        '''Get a record given its collection and _id '''
+        '''Get a record given its collection and _id
+
+        Parameters:
+            collection: the collection of the desired record
+            recID: the _id of the desired record
+
+        Return:
+            retRec: the record corresponding to the recID'''
         if collection in self.collList:
             retRec = self.db[collection].find_one({"_id": ObjectId(recID)})
         else:
@@ -140,7 +175,13 @@ class Mongo:
         return retRec
 
     def getRecords(self, collection):
-        '''Get all records in a collection'''
+        '''Get all records in a collection
+
+        Parameters:
+            collection: the collection of the desired record
+
+        Return:
+            retStr: list of the records in the collection'''
         retStr = list()
         if collection in self.collList:
             for x in self.db[collection].find():
@@ -150,13 +191,34 @@ class Mongo:
         return retStr
 
     def updateRecord(self, collection, recID, updateVals, updateType):
-        '''Update a record with a set of values given a collection and _id'''
+        '''Update a record with a set of values given a collection and _id
+
+        Parameters:
+            collection: the collection of the desired record
+            recID: the _id of the desired record
+            updateVals: a dict of the information to add to the DB record
+            updateType: 'set' overrides the existing value if extant
+                        'push' appends this entry to a list
+
+        Return:
+            None
+        '''
         if updateType == 'set':  # overrides the values
             self.db[collection].update_one({'_id': ObjectId(recID)}, {'$set': updateVals})
         elif updateType == 'push':  # appends the values to an array
             self.db[collection].update_one({'_id': ObjectId(recID)}, {'$push': updateVals})
 
     def newRecord(self, collection, **kwargs):
+        '''Create a record in a given collection (with optional contents)
+
+                Parameters:
+                    collection: the collection of the desired record
+                    kwargs (optional): key-value pairs of data to add to the record
+
+                Return:
+                    _id of created record
+                '''
+
         newRec = {
             "userName": self.OUN,
             "CreateTime": datetime.datetime.now(),
@@ -166,6 +228,14 @@ class Mongo:
         return docID.inserted_id
 
     def deleteRecords(self, collection):
+        '''Delete all records in a given collection
+
+                Parameters:
+                    collection: the collection to be cleared
+
+                Return:
+                    None
+                '''
         if collection in self.collList:
             x = collection.delete_many({})
             print(x.deleted_count, " documents deleted.")
@@ -173,6 +243,14 @@ class Mongo:
             print('the collection \'' + collection + '\' does not exist in the database ' + str(self.db.name))
 
     def dropCollection(self, collection):
+        '''Delete a given collection
+
+                Parameters:
+                    collection: the collection to be deleted
+
+                Return:
+                    None
+                '''
         x = collection.drop()
         if x:
             print(collection + ' collection dropped successfully')
@@ -184,16 +262,43 @@ class Mongo:
     Methods for handling files in the database with gridFS
     '''
     def putFile(self, filepath, **kwargs):
+        '''Put a file in GridFS storage
+
+                Parameters:
+                    filepath: path to the file to be uploaded
+                    kwargs (optional): additional fields to be added to the record
+
+                Return:
+                    _id of the file record
+                '''
         return self.fs.put(filepath, **kwargs)
+
     def getFile(self, fileID):
+        '''Get a file from GridFS storage
+
+                        Parameters:
+                            fileID: _id of the file record
+
+                        Return:
+                            the file corresponding to the _id (as returned by its .read() function)
+                        '''
         return self.fs.get(fileID).read()
+
     def deleteFile(self, fileID):
+        '''Delete a file from GridFS storage
+
+           Parameters:
+               fileID: _id of the file record
+
+           Return:
+               None
+           '''
         self.fs.delete(fileID)
 
 
 if __name__ == "__main__":
-    db = dbComm('wci-ame-u-prd.llnl.gov', authentication='LDAP')
-    # db = dbComm('maptac19')
+    # db = Mongo('wci-ame-u-prd.llnl.gov', authentication='LDAP')
+    db = Mongo('maptac19')
     print(db.getDBs())
     # print(db.getRecords(db.collList[0]))
 

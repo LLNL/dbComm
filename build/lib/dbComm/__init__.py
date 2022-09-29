@@ -1,1 +1,1 @@
-from dbComm.dbComm import Mongo
+from dbComm.mongo import Mongo

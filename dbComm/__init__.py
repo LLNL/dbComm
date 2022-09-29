@@ -1,2 +1,1 @@
-# from . import dbComm
-from dbComm import dbComm
+from dbComm.dbComm import Mongo

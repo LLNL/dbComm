@@ -6,4 +6,5 @@ dbComm/dbComm.py
 dbComm.egg-info/PKG-INFO
 dbComm.egg-info/SOURCES.txt
 dbComm.egg-info/dependency_links.txt
+dbComm.egg-info/requires.txt
 dbComm.egg-info/top_level.txt

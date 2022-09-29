@@ -15,7 +15,7 @@ import os
 import getpass
 import sys
 
-class dbComm:
+class Mongo:
     """Provide interface to DB (currently MongoDB)."""
 
     def __init__(self, hostname, port=27017, authentication='None', OUN=None, AD=None, debug=False):

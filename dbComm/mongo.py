@@ -158,17 +158,23 @@ class Mongo:
     '''
     This Section is actions on records in a specified collection
     '''
-    def getRecord(self, collection, recID):
+    def getRecord(self, collection, field):
         '''Get a record given its collection and _id
 
         Parameters:
             collection: the collection of the desired record
-            recID: the _id of the desired record
+            field: the _id or a key-value identifier of the desired record
 
         Return:
             retRec: the record corresponding to the recID'''
+
+        if type(field) is str or type(field) is bson.objectid:
+            field = {"_id": ObjectId(field)}
+        elif type(field) is not dict:
+            raise Exception('Invalid field. Must be either an ObjectId or a dictionary')
+
         if collection in self.collList:
-            retRec = self.db[collection].find_one({"_id": ObjectId(recID)})
+                retRec = self.db[collection].find_one(field)
         else:
             retRec = None
             print('the collection \'' + collection + '\' does not exist in the database ' + str(self.db.name))
@@ -190,12 +196,12 @@ class Mongo:
             print('the collection \'' + collection + '\' does not exist in the database ' + str(self.db.name))
         return retStr
 
-    def updateRecord(self, collection, recID, updateVals, updateType):
+    def updateRecord(self, collection, field, updateVals, updateType):
         '''Update a record with a set of values given a collection and _id
 
         Parameters:
             collection: the collection of the desired record
-            recID: the _id of the desired record
+            field: the _id or a key-value identifier of the desired record
             updateVals: a dict of the information to add to the DB record
             updateType: 'set' overrides the existing value if extant
                         'push' appends this entry to a list
@@ -203,10 +209,17 @@ class Mongo:
         Return:
             None
         '''
+        if type(field) is str or type(field) is bson.objectid:
+            field = {"_id": ObjectId(field)}
+        elif type(field) is not dict:
+            raise Exception('Invalid field. Must be either an ObjectId or a dictionary')
+
+        if collection in self.collList:
+            retRec = self.db[collection].find_one(field)
         if updateType == 'set':  # overrides the values
-            self.db[collection].update_one({'_id': ObjectId(recID)}, {'$set': updateVals})
+            self.db[collection].update_one(field, {'$set': updateVals})
         elif updateType == 'push':  # appends the values to an array
-            self.db[collection].update_one({'_id': ObjectId(recID)}, {'$push': updateVals})
+            self.db[collection].update_one(field, {'$push': updateVals})
 
     def newRecord(self, collection, **kwargs):
         '''Create a record in a given collection (with optional contents)

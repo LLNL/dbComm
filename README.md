@@ -1,6 +1,6 @@
 # dbComm
 - **Author:** Alex Caviness ([caviness2@llnl.gov](mailto:caviness2@llnl.gov))
-- **Source code:** https://mybitbucket.llnl.gov/projects/PREC/repos/database-comm/
+- **Source code:** https://mybitbucket.llnl.gov/projects/LLNL/repos/database-comm/
 
 ## About
 dbComm is a module for integrating a Python codebase with MongoDB using the PyMongo library.
@@ -8,10 +8,10 @@ The methods contained are used to connect to a Mongo database and push/pull data
 
 ## Installing
 The easiest method of installation is through using Pip. <br>
-`pip install git+https://mybitbucket.llnl.gov/scm/prec/database-comm.git`
+`pip install git+https://mybitbucket.llnl.gov/scm/llnl/database-comm.git`
 
 If you prefer, you can clone the repo using:<br>
-`git clone https://mybitbucket.llnl.gov/scm/prec/database-comm.git dbComm`
+`git clone https://mybitbucket.llnl.gov/scm/llnl/database-comm.git dbComm`
 
 ## Usage
 To use dbComm, create an instance of the class. This will attempt to connect to the database.

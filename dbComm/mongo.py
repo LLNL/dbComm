@@ -17,7 +17,7 @@ import sys
 class Mongo:
     """Provide an interface to MongoDB."""
 
-    def __init__(self, host, port=27017, authentication='None', OUN=None, AD=None):
+    def __init__(self, host, port=27017, authentication=None, OUN=None, AD=None):
         """Establish connection to a MongoDB server.
 
         The `host` parameter can be a full `mongodb URI
@@ -38,7 +38,7 @@ class Mongo:
                 self.newConn(host)
             except pymongo.errors.ServerSelectionTimeoutError:
                 raise Exception('Server timeout. Check connection details.')
-        elif authentication == 'None':
+        elif authentication == None:
             try:
                 self.newConn(f'{host}:{port}')
             except pymongo.errors.ServerSelectionTimeoutError:
@@ -65,8 +65,15 @@ class Mongo:
                     else:
                         print('Enter AD: ')
                         AD = sys.stdin.readline().rstrip()
-                    uri = f'mongodb://{self.OUN}:{AD}@{host}:{port}/tls=true?authMechanism=PLAIN&' \
-                      'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
+                    if type(host) is list:
+                        insert = ''
+                        for h in host:
+                            insert += f'{h}:{port},'
+                        insert = insert[:-1]  # removes trailing comma
+                        uri = f'mongodb://{self.OUN}:{AD}@{insert}/?authMechanism=PLAIN&replicaSet=ame&authSource=%24external&ssl=true'
+                    else:
+                        uri = f'mongodb://{self.OUN}:{AD}@{host}:{port}/tls=true?authMechanism=PLAIN&' \
+                              'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
                     self.newConn(uri)
                     auth = True
                     print(f'Connected to {host}')
@@ -310,8 +317,8 @@ class Mongo:
 
 
 if __name__ == "__main__":
-    # db = Mongo('wci-ame-u-prd.llnl.gov', authentication='LDAP')
-    db = Mongo('maptac19')
+    db = Mongo(['wci-ame-u-prd.llnl.gov','wci-ame-u-prd-2.llnl.gov','wci-ame-u-prd-3.llnl.gov'], authentication='LDAP')
+    # db = Mongo('maptac19')
     print(db.getDBs())
     # print(db.getRecords(db.collList[0]))
 

@@ -45,43 +45,43 @@ class Mongo:
                 raise Exception('Server timeout. Check connection details.')
         elif authentication == 'LDAP':
             auth = False
-            attempts = 0
-            while not auth:
-                attempts += 1
-                if attempts > 5:
-                    raise Exception('Too many failed password attempts.')
-                    break
-                try:
-                    if OUN:
-                        self.OUN = OUN
-                    else:
-                        self.OUN = getpass.getuser()
-                    # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
-                    # otherwise, the entered password will be printed to the console
-                    if AD:
-                        pass
-                    elif sys.stdin.isatty():
-                        AD = getpass.getpass('Enter AD: ')
-                    else:
-                        print('Enter AD: ')
-                        AD = sys.stdin.readline().rstrip()
-                    if type(host) is list:
-                        insert = ''
-                        for h in host:
-                            insert += f'{h}:{port},'
-                        insert = insert[:-1]  # removes trailing comma
-                        uri = f'mongodb://{self.OUN}:{AD}@{insert}/?authMechanism=PLAIN&replicaSet=ame&authSource=%24external&ssl=true'
-                    else:
-                        uri = f'mongodb://{self.OUN}:{AD}@{host}:{port}/tls=true?authMechanism=PLAIN&' \
-                              'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
-                    self.newConn(uri)
-                    auth = True
-                    print(f'Connected to {host}')
-                except pymongo.errors.OperationFailure:  # Authentication Error
-                    print('Authentication Error. Try again.')
-                    AD = None
-                except pymongo.errors.ServerSelectionTimeoutError:
-                    raise Exception('Server timeout. Check connection details.')
+            # attempts = 0
+            # while not auth:
+            #     attempts += 1
+            #     if attempts > 5:
+            #         raise Exception('Too many failed password attempts.')
+            #         break
+            try:
+                if OUN:
+                    self.OUN = OUN
+                else:
+                    self.OUN = getpass.getuser()
+                # to work in PyCharm, 'Edit Configurations' and tick the 'Emulate terminal' box
+                # otherwise, the entered password will be printed to the console
+                if AD:
+                    pass
+                elif sys.stdin.isatty():
+                    AD = getpass.getpass('Enter AD: ')
+                else:
+                    print('Enter AD: ')
+                    AD = sys.stdin.readline().rstrip()
+                if type(host) is list:
+                    insert = ''
+                    for h in host:
+                        insert += f'{h}:{port},'
+                    insert = insert[:-1]  # removes trailing comma
+                    uri = f'mongodb://{self.OUN}:{AD}@{insert}/?authMechanism=PLAIN&replicaSet=ame&authSource=%24external&ssl=true'
+                else:
+                    uri = f'mongodb://{self.OUN}:{AD}@{host}:{port}/tls=true?authMechanism=PLAIN&' \
+                          'replicaSet=ame&readPreference=primary&authSource=%24external&directConnection=true&ssl=true'
+                self.newConn(uri)
+                auth = True
+                print(f'Connected to {host}')
+            except pymongo.errors.OperationFailure:  # Authentication Error
+                print('Authentication Error. Try again.')
+                AD = None
+            except pymongo.errors.ServerSelectionTimeoutError:
+                raise Exception('Server timeout. Check connection details.')
         else:
             print('Authentication method not set up yet. Contact admin')
 
@@ -216,7 +216,7 @@ class Mongo:
         Return:
             None
         '''
-        if type(field) is str or type(field) is bson.objectid:
+        if type(field) is str or type(field) is bson.objectid.ObjectId:
             field = {"_id": ObjectId(field)}
         elif type(field) is not dict:
             raise Exception('Invalid field. Must be either an ObjectId or a dictionary')

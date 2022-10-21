@@ -175,7 +175,7 @@ class Mongo:
         Return:
             retRec: the record corresponding to the recID'''
 
-        if type(field) is str or type(field) is bson.objectid:
+        if type(field) is str or type(field) is bson.objectid.ObjectId:
             field = {"_id": ObjectId(field)}
         elif type(field) is not dict:
             raise Exception('Invalid field. Must be either an ObjectId or a dictionary')

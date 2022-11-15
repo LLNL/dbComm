@@ -302,6 +302,8 @@ class Mongo:
                         Return:
                             the file corresponding to the _id (as returned by its .read() function)
                         '''
+        if type(fileID) is str:
+            fileID = ObjectId(fileID)
         return self.fs.get(fileID).read()
 
     def deleteFile(self, fileID):

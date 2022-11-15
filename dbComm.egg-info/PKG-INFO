@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dbComm
-Version: 0.0.8
+Version: 0.0.9
 Summary: dbComm module for communicating with a (MongoDB) database
 Author-email: Alex Caviness <caviness2@llnl.gov>
 Project-URL: Homepage, https://mybitbucket.llnl.gov/projects/PREC/repos/database-comm/

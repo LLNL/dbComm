@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dbComm
-Version: 0.0.4
+Version: 0.0.8
 Summary: dbComm module for communicating with a (MongoDB) database
 Author-email: Alex Caviness <caviness2@llnl.gov>
 Project-URL: Homepage, https://mybitbucket.llnl.gov/projects/PREC/repos/database-comm/
@@ -21,7 +21,7 @@ The methods contained are used to connect to a Mongo database and push/pull data
 
 ## Installing
 The easiest method of installation is through using Pip. <br>
-`pip install git+https://mybitbucket.llnl.gov/scm/llnl/database-comm.git`
+`pip install -U git+https://mybitbucket.llnl.gov/scm/llnl/database-comm.git`
 
 If you prefer, you can clone the repo using:<br>
 `git clone https://mybitbucket.llnl.gov/scm/llnl/database-comm.git dbComm`

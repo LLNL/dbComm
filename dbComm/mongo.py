@@ -319,9 +319,7 @@ class Mongo:
 
 
 if __name__ == "__main__":
-    db = Mongo(['wci-ame-u-prd.llnl.gov','wci-ame-u-prd-2.llnl.gov','wci-ame-u-prd-3.llnl.gov'], authentication='LDAP')
-    # db = Mongo('maptac19')
+    db = Mongo('localhost')
     print(db.getDBs())
-    # print(db.getRecords(db.collList[0]))
 
 

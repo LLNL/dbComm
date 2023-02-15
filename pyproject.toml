@@ -4,16 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dbComm"
-version = "0.0.9"
+version = "0.2.0"
 authors = [
   { name="Alex Caviness", email="caviness2@llnl.gov" },
 ]
-description = "dbComm module for communicating with a (MongoDB) database"
+description = "Module for communicating with a (MongoDB) database"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: PSF License",
     "Operating System :: OS Independent",
 ]
 dependencies = [

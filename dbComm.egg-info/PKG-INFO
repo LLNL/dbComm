@@ -1,11 +1,11 @@
 Metadata-Version: 2.1
 Name: dbComm
-Version: 0.2.0
+Version: 0.2.2
 Summary: Module for communicating with a (MongoDB) database
 Author-email: Alex Caviness <caviness2@llnl.gov>
-Project-URL: Homepage, https://mybitbucket.llnl.gov/projects/PREC/repos/database-comm/
+Project-URL: Homepage, https://github.com/LLNL/dbComm
 Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: PSF License
+Classifier: License :: OSI Approved :: Python Software Foundation License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
@@ -21,18 +21,18 @@ The methods contained are used to connect to a Mongo database and push/pull data
 
 ## Installing
 The easiest method of installation is through using Pip. <br>
-`pip install -U git+https://mybitbucket.llnl.gov/scm/llnl/database-comm.git`
+`pip install -U git+https://github.com/LLNL/dbComm.git`
 
 If you prefer, you can clone the repo using:<br>
-`git clone https://mybitbucket.llnl.gov/scm/llnl/database-comm.git dbComm`
+`git clone https://github.com/LLNL/dbComm.git`
 
 ## Usage
 To use dbComm, create an instance of the class. This will attempt to connect to the database.
 Upon successful connection, any of the methods can be used in the class to interact with the database.
 ```
-import dbComm as db
-ammoDB = db.Mongo('maptac19')
-print(ammoDB.getDBs())
+import dbComm
+db = dbComm.Mongo('myServer')
+print(myServer.getDBs())
 ```
 
 ## Troubleshooting

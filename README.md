@@ -8,10 +8,10 @@ The methods contained are used to connect to a Mongo database and push/pull data
 
 ## Installing
 The easiest method of installation is through using Pip. <br>
-`pip install -U git+https://github.com/musicalpigeon/dbComm.git`
+`pip install -U git+https://github.com/LLNL/dbComm.git`
 
 If you prefer, you can clone the repo using:<br>
-`git clone https://github.com/musicalpigeon/dbComm.git`
+`git clone https://github.com/LLNL/dbComm.git`
 
 ## Usage
 To use dbComm, create an instance of the class. This will attempt to connect to the database.

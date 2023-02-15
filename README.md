@@ -1,4 +1,7 @@
 # dbComm
+
+[![PyPi](https://img.shields.io/pypi/v/hy.svg)](https://pypi.org/project/dbComm/)
+
 - **Author:** Alex Caviness ([caviness2@llnl.gov](mailto:caviness2@llnl.gov))
 - **Source code:** https://mybitbucket.llnl.gov/projects/LLNL/repos/database-comm/
 

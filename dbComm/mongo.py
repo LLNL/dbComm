@@ -17,7 +17,7 @@ import sys
 class Mongo:
     """Provide an interface to MongoDB."""
 
-    def __init__(self, host, port=27017, authentication=None, OUN=None, AD=None):
+    def __init__(self, host, port=27017, authentication=None, OUN=None, AD=None, timeout=5000):
         """Establish connection to a MongoDB server.
 
         The `host` parameter can be a full `mongodb URI
@@ -33,6 +33,8 @@ class Mongo:
           - AD (optional): password to connect to DB
           """
 
+        self.timeout = timeout
+        
         if 'mongodb://' in host:
             try:
                 self.newConn(host)
@@ -97,7 +99,7 @@ class Mongo:
         Return:
             None"""
 
-        self.dbClient = pymongo.MongoClient(host, serverSelectionTimeoutMS=5000)
+        self.dbClient = pymongo.MongoClient(host, serverSelectionTimeoutMS=self.timeout)
         self.getDBs()
 
     def getDBs(self):

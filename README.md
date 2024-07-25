@@ -2,7 +2,7 @@
 
 [![PyPi](https://img.shields.io/pypi/v/hy.svg)](https://pypi.org/project/dbComm/)
 
-- **Author:** Alex Caviness ([caviness2@llnl.gov](mailto:caviness2@llnl.gov))
+- **Author:** Pigeon Caviness ([caviness2@llnl.gov](mailto:caviness2@llnl.gov))
 
 ## About
 dbComm is a module for integrating a Python codebase with MongoDB using the PyMongo library.

@@ -8,3 +8,7 @@ __pycache__/
 
 logs/
 *.log
+
+dbComm.egg-info/*
+.conda/*
+dist/*

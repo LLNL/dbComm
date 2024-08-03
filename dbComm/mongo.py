@@ -23,6 +23,8 @@ class Mongo:
         ssh=False,
         ssh_host=None,
         database=None,
+        ssh_username=None,
+        ssh_password=None,
         timeout=5000,
     ):
         """Establish connection to a MongoDB server.
@@ -52,10 +54,14 @@ class Mongo:
             except pymongo.errors.ServerSelectionTimeoutError:
                 raise Exception("Server timeout. Check connection details.")
         elif ssh == True:
+            if not ssh_username:
+                ssh_username = input("LC Username: ")
+            if not ssh_password:
+                ssh_password = getpass("LC Password (VPN/CZ PIN + Token): ")
             self.server = SSHTunnelForwarder(
                 (ssh_host, 22),
-                ssh_username=input("LC Username: "),
-                ssh_password=getpass("LC Password (VPN/CZ PIN + Token): "),
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
                 remote_bind_address=(host, port),
                 allow_agent=False,
             )

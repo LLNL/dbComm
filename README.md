@@ -2,7 +2,7 @@
 
 [![PyPi](https://img.shields.io/pypi/v/hy.svg)](https://pypi.org/project/dbComm/)
 
-- **Author:** Pigeon Caviness ([caviness2@llnl.gov](mailto:caviness2@llnl.gov))
+- **Author:** Pigeon Caviness ([pigeon@llnl.gov](mailto:pigeon@llnl.gov))
 
 ## About
 dbComm is a module for integrating a Python codebase with MongoDB using the PyMongo library.
@@ -32,7 +32,7 @@ run: `pip uninstall enum34`
 ## Contributing
 dbComm is an open source project and constantly evolving! 
 We welcome contributions via pull requests as well as questions, feature requests, or bug reports via issues. 
-Contact our team at caviness2@llnl.gov with any questions. <br><br>
+Contact our team at pigeon@llnl.gov with any questions. <br><br>
 If you are not a developer at LLNL, you won't have permission to push new branches to the repository. 
 First, you should create a fork. 
 This will create your copy of the ATS repository and ensure you can push your changes up to GitHub and create PRs.

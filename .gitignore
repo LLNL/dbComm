@@ -1,17 +1,27 @@
-venv
 .venv
-
-*.pyc
-__pycache__/
+venv
+.conda
 
 .idea
 .spyproject
-.conda
-.vs_code
+.vscode
+.DS_Store
+.Rproj.user
+.ipynb_checkpoints
 
-logs/
+*.pyc
+__pycache__
+.pytype
+*.egg-info
+
+*logs*
 *.log
 
-dbComm.egg-info
+*.pgm
+*.csv
 
+
+data/*
+temp
+build
 dist

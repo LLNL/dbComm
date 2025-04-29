@@ -1,2 +1,9 @@
+"""**dbComm** is a wrapper for pymongo."""
+
 from .mongo import Mongo
-from .objectID import ObjectId
+from bson.objectid import ObjectId
+
+__all__ = [
+    "Mongo",
+    "ObjectId",
+]

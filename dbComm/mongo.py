@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-
-from bson.objectid import ObjectId
-import bson
 import datetime
-import gridfs
-import pymongo
 from getpass import getpass, getuser
 import sys
 from sshtunnel import SSHTunnelForwarder
+import bson
+import gridfs
+import pymongo
+import dbComm as dbc
 
 
 class Mongo:
@@ -53,7 +52,7 @@ class Mongo:
                 self.newConn(host)
             except pymongo.errors.ServerSelectionTimeoutError:
                 raise Exception("Server timeout. Check connection details.")
-        elif ssh == True:
+        elif ssh is True:
             if not ssh_username:
                 ssh_username = input("LC Username: ")
             if not ssh_password:
@@ -71,7 +70,7 @@ class Mongo:
                 port=self.server.local_bind_port,
             )
             self.dbList = self.dbClient.list_database_names()
-        elif authentication == None:
+        elif authentication is None:
             try:
                 self.newConn(f"{host}:{port}")
             except pymongo.errors.ServerSelectionTimeoutError:
@@ -169,7 +168,7 @@ class Mongo:
         fColl, fRec = None, None
         for x in self.collList:
             coll = self.db[f"{x}"]
-            rec = coll.find_one({"_id": ObjectId(RecID)})
+            rec = coll.find_one({"_id": dbc.ObjectId(RecID)})
             if rec:
                 fColl = x
                 fRec = rec
@@ -209,10 +208,12 @@ class Mongo:
         Return:
             retRec: the record corresponding to the recID"""
 
-        if type(field) is str or type(field) is bson.objectid.ObjectId:
-            field = {"_id": ObjectId(field)}
+        if type(field) is str or type(field) is bson.objectid.dbc.ObjectId:
+            field = {"_id": dbc.ObjectId(field)}
         elif type(field) is not dict:
-            raise Exception("Invalid field. Must be either an ObjectId or a dictionary")
+            raise Exception(
+                "Invalid field. Must be either an dbc.ObjectId or a dictionary"
+            )
 
         if collection in self.collList:
             retRec = self.db[collection].find_one(field)
@@ -260,13 +261,13 @@ class Mongo:
         Return:
             None
         """
-        if type(field) is str or type(field) is bson.objectid.ObjectId:
-            field = {"_id": ObjectId(field)}
+        if type(field) is str or type(field) is dbc.ObjectId:
+            field = {"_id": dbc.ObjectId(field)}
         elif type(field) is not dict:
-            raise Exception("Invalid field. Must be either an ObjectId or a dictionary")
+            raise Exception(
+                "Invalid field. Must be either an dbc.ObjectId or a dictionary"
+            )
 
-        if collection in self.collList:
-            retRec = self.db[collection].find_one(field)
         if updateType == "set":  # overrides the values
             self.db[collection].update_one(field, {"$set": updateVals})
         elif updateType == "push":  # appends the values to an array
@@ -357,7 +358,7 @@ class Mongo:
             the file corresponding to the _id (as returned by its .read() function)
         """
         if type(fileID) is str:
-            fileID = ObjectId(fileID)
+            fileID = dbc.ObjectId(fileID)
         return self.fs.get(fileID).read()
 
     def deleteFile(self, fileID):

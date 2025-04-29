@@ -1,14 +1,17 @@
-venv/
+venv
+.venv
 
 *.pyc
 __pycache__/
 
-.idea/*
-.spyproject/*
+.idea
+.spyproject
+.conda
+.vs_code
 
 logs/
 *.log
 
-dbComm.egg-info/*
-.conda/*
-dist/*
+dbComm.egg-info
+
+dist

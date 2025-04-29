@@ -8,7 +8,19 @@ from bson.objectid import ObjectId
 
 
 class Mongo:
-    """Provide an interface to MongoDB."""
+    """
+    Provide an interface to MongoDB with support for SSH tunneling and LDAP authentication.
+
+    Attributes:
+        timeout (int): Connection timeout in milliseconds
+        server (SSHTunnelForwarder): SSH tunnel connection if active
+        username (str): Current username for authentication
+        dbClient (MongoClient): MongoDB client connection
+        db (Database): Current active database
+        fs (GridFS): GridFS instance for file operations
+        dbList (List[str]): List of available databases
+        collList (List[str]): List of collections in current database
+    """
 
     def __init__(
         self,

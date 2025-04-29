@@ -138,4 +138,4 @@ The package raises standard MongoDB exceptions plus:
 5. Create Pull Request
 
 ## License
-see [LICENSE](LICENSE)
+see [LICENSE](LICENSE.md)

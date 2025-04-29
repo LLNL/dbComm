@@ -37,4 +37,4 @@ record = db.getRecord("mycollection", record_id)
 For full documentation, visit [docs/index.md](docs/index.md)
 
 ## License
-see [LICENSE](LICENSE.md)
+see [LICENSE](LICENSE)

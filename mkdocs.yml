@@ -1,1 +1,17 @@
 site_name: dbComm docs
+site_description: MongoDB wrapper with SSH tunneling and LDAP authentication support
+repo_url: https://github.com/yourusername/dbComm
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: light blue
+
+nav:
+  - Home: index.md
+  - API Reference: api.md
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition

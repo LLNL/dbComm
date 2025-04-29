@@ -1,4 +1,4 @@
-name: Publish docs, testpypi, pypi
+name: Release
 on:
   push:
     branches:
